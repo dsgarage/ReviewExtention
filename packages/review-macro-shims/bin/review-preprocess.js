@@ -479,60 +479,36 @@ program
           const replacements = await processFile(file, options.outDir, options.verbose);
           if (replacements > 0) {
             console.log(chalk.green(`✓ ${file} (${replacements} replacements)`));
-          } else if (options.verbose) {
-            console.log(chalk.gray(`✓ ${file} (no changes)`));
+          } else {
+            console.log(chalk.gray(`○ ${file} (no changes)`));
           }
         } else {
-          console.log(chalk.gray(`[DRY RUN] Would process: ${file}`));
+          console.log(chalk.yellow(`[DRY RUN] ${file}`));
         }
       }
       
-      // 統計情報の表示
-      if (options.stats || options.verbose) {
+      // 統計表示
+      if (options.stats) {
         console.log(chalk.cyan('\n=== Conversion Statistics ==='));
         console.log(chalk.white(`Files processed: ${stats.filesProcessed}`));
         console.log(chalk.white(`Total replacements: ${stats.totalReplacements}`));
-        
-        if (Object.keys(stats.ruleStats).length > 0) {
-          console.log(chalk.cyan('\nRule applications:'));
-          for (const [rule, count] of Object.entries(stats.ruleStats)) {
-            if (count > 0) {
-              console.log(chalk.gray(`  ${rule}: ${count}`));
-            }
+        console.log(chalk.white('\nRule statistics:'));
+        for (const [ruleName, count] of Object.entries(stats.ruleStats)) {
+          if (count > 0) {
+            console.log(chalk.gray(`  ${ruleName}: ${count}`));
           }
         }
       }
       
       if (!options.dryRun) {
-        console.log(chalk.green(`\n✓ Preprocessing complete! Output written to: ${options.outDir}`));
+        console.log(chalk.green(`\n✓ Conversion completed! Files written to: ${options.outDir}`));
       } else {
-        console.log(chalk.yellow('\n[DRY RUN] No files were modified.'));
+        console.log(chalk.yellow(`\n✓ Dry run completed! No files were written.`));
       }
-      
     } catch (error) {
-      console.error(chalk.red('Error:'), error.message);
-      if (options.verbose) {
-        console.error(error.stack);
-      }
+      console.error(chalk.red(`Error: ${error.message}`));
       process.exit(1);
     }
   });
-
-// ヘルプ表示のカスタマイズ
-program.on('--help', () => {
-  console.log('');
-  console.log('Examples:');
-  console.log('  $ review-preprocess "articles/**/*.re"');
-  console.log('  $ review-preprocess "chapters/*.re" -o build/preprocessed');
-  console.log('  $ review-preprocess "**/*.re" --dry-run --stats');
-  console.log('  $ review-preprocess --list-options  # Show available list options');
-  console.log('');
-  console.log('Conversion Rules:');
-  rules.forEach(rule => {
-    if (rule.description) {
-      console.log(`  - ${rule.description}`);
-    }
-  });
-});
 
 program.parse();
