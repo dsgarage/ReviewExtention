@@ -1,0 +1,242 @@
+/**
+ * Re:VIEW Note and Miniblock Styles
+ * For HTML and ePub output
+ */
+
+/* ===== Note Block Styles ===== */
+.rs-note {
+  position: relative;
+  margin: 1.5em 0;
+  padding: 1.2em 1.5em;
+  background-color: #f5f7fa;
+  border: 1px solid #d3dae6;
+  border-radius: 4px;
+}
+
+.rs-note::before {
+  content: "📝";
+  position: absolute;
+  top: -0.8em;
+  left: 1em;
+  background-color: white;
+  padding: 0 0.5em;
+  font-size: 1.2em;
+}
+
+.rs-note-title {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  color: #2c3e50;
+}
+
+/* ===== Miniblock Common Styles ===== */
+.rs-memo,
+.rs-tip,
+.rs-info,
+.rs-warning,
+.rs-important,
+.rs-caution,
+.rs-notice {
+  position: relative;
+  margin: 1.5em 0;
+  padding: 1em 1em 1em 3.5em;
+  border-radius: 4px;
+  min-height: 3em;
+}
+
+/* Icon positioning for miniblocks */
+.rs-memo::before,
+.rs-tip::before,
+.rs-info::before,
+.rs-warning::before,
+.rs-important::before,
+.rs-caution::before,
+.rs-notice::before {
+  content: "";
+  position: absolute;
+  left: 1em;
+  top: 1em;
+  width: 1.5em;
+  height: 1.5em;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* ===== Individual Miniblock Styles ===== */
+
+/* Memo */
+.rs-memo {
+  background-color: #f8f9fa;
+  border-left: 4px solid #9E9E9E;
+}
+
+.rs-memo::before {
+  background-image: url('../../../img/memo.svg');
+}
+
+/* Tip */
+.rs-tip {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4CAF50;
+}
+
+.rs-tip::before {
+  background-image: url('../../../img/tip.svg');
+}
+
+/* Info */
+.rs-info {
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196F3;
+}
+
+.rs-info::before {
+  background-image: url('../../../img/info.svg');
+}
+
+/* Warning */
+.rs-warning {
+  background-color: #fff3e0;
+  border-left: 4px solid #FF9800;
+}
+
+.rs-warning::before {
+  background-image: url('../../../img/warning.svg');
+}
+
+/* Important */
+.rs-important {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+}
+
+.rs-important::before {
+  background-image: url('../../../img/important.svg');
+}
+
+/* Caution */
+.rs-caution {
+  background-color: #fffde7;
+  border-left: 4px solid #FFC107;
+}
+
+.rs-caution::before {
+  background-image: url('../../../img/caution.svg');
+}
+
+/* Notice */
+.rs-notice {
+  background-color: #f3e5f5;
+  border-left: 4px solid #673AB7;
+}
+
+.rs-notice::before {
+  background-image: url('../../../img/notice.svg');
+}
+
+/* ===== Miniblock Title Styles ===== */
+.rs-memo-title,
+.rs-tip-title,
+.rs-info-title,
+.rs-warning-title,
+.rs-important-title,
+.rs-caution-title,
+.rs-notice-title {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  display: block;
+}
+
+/* ===== Fallback for Missing Icons ===== */
+.rs-memo.no-icon::before { content: "[MEMO]"; }
+.rs-tip.no-icon::before { content: "[TIP]"; }
+.rs-info.no-icon::before { content: "[INFO]"; }
+.rs-warning.no-icon::before { content: "[WARNING]"; }
+.rs-important.no-icon::before { content: "[IMPORTANT]"; }
+.rs-caution.no-icon::before { content: "[CAUTION]"; }
+.rs-notice.no-icon::before { content: "[NOTICE]"; }
+
+.no-icon::before {
+  width: auto;
+  height: auto;
+  background: none;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+/* ===== Code and List Styles Inside Note/Miniblocks ===== */
+.rs-note pre,
+.rs-note .list,
+.rs-memo pre,
+.rs-tip pre,
+.rs-info pre,
+.rs-warning pre,
+.rs-important pre,
+.rs-caution pre,
+.rs-notice pre {
+  margin: 0.5em 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.5em;
+  border-radius: 3px;
+}
+
+.rs-note ul,
+.rs-note ol,
+.rs-memo ul,
+.rs-tip ul,
+.rs-info ul,
+.rs-warning ul,
+.rs-important ul,
+.rs-caution ul,
+.rs-notice ul {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+  .rs-note,
+  .rs-memo,
+  .rs-tip,
+  .rs-info,
+  .rs-warning,
+  .rs-important,
+  .rs-caution,
+  .rs-notice {
+    padding-left: 3em;
+  }
+  
+  .rs-memo::before,
+  .rs-tip::before,
+  .rs-info::before,
+  .rs-warning::before,
+  .rs-important::before,
+  .rs-caution::before,
+  .rs-notice::before {
+    left: 0.5em;
+  }
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  .rs-note,
+  .rs-memo,
+  .rs-tip,
+  .rs-info,
+  .rs-warning,
+  .rs-important,
+  .rs-caution,
+  .rs-notice {
+    page-break-inside: avoid;
+  }
+  
+  /* Use text labels for print */
+  .rs-memo::before { content: "[MEMO]" !important; background: none !important; }
+  .rs-tip::before { content: "[TIP]" !important; background: none !important; }
+  .rs-info::before { content: "[INFO]" !important; background: none !important; }
+  .rs-warning::before { content: "[WARNING]" !important; background: none !important; }
+  .rs-important::before { content: "[IMPORTANT]" !important; background: none !important; }
+  .rs-caution::before { content: "[CAUTION]" !important; background: none !important; }
+  .rs-notice::before { content: "[NOTICE]" !important; background: none !important; }
+}

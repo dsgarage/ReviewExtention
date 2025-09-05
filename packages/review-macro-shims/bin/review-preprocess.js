@@ -2,7 +2,7 @@
 
 /**
  * Re:VIEW Preprocessor - Convert differential tags to Re:VIEW 5.8 compatible format
- * Version 0.2.0 - Added list unification and extended options
+ * Version 0.3.0 - Added list unification, extended options, and note/miniblock processing
  */
 
 import { program } from 'commander';
@@ -120,6 +120,65 @@ function wrapLongLines(content, maxLength, foldMark) {
   }
   
   return wrappedLines.join('\n');
+}
+
+// ノート/ミニブロック処理
+function processNoteBlock(match, arg1, arg2, content) {
+  let label = '';
+  let title = '';
+  
+  // 引数の解釈ルール：第1引数のみの場合はタイトルとして扱う
+  if (arg2 !== undefined && arg2 !== '') {
+    label = arg1 || '';
+    title = arg2 || '';
+  } else if (arg1 !== undefined && arg1 !== '') {
+    title = arg1;
+  }
+  
+  // メタデータをコメントとして埋め込み
+  let processedContent = content;
+  
+  // ラベルがある場合は参照可能であることを記録
+  if (label) {
+    processedContent = `\n#@# note-label: ${label}\n` + processedContent;
+  }
+  
+  // 標準的なnote形式を維持
+  let result = '//note';
+  if (label) result += `[${label}]`;
+  result += `[${title}]`;
+  result += `{`;
+  result += processedContent;
+  result += '//}';
+  
+  return result;
+}
+
+function processMiniBlock(type, match, title, content) {
+  // アイコンパスを記録
+  const iconMap = {
+    'memo': 'img/memo.svg',
+    'tip': 'img/tip.svg',
+    'info': 'img/info.svg',
+    'warning': 'img/warning.svg',
+    'important': 'img/important.svg',
+    'caution': 'img/caution.svg',
+    'notice': 'img/notice.svg'
+  };
+  
+  // アイコン情報を埋め込み
+  let processedContent = content;
+  if (iconMap[type]) {
+    processedContent = `\n#@# icon: ${iconMap[type]}\n#@# css-class: rs-${type}\n` + processedContent;
+  }
+  
+  let result = `//${type}`;
+  if (title) result += `[${title}]`;
+  result += `{`;
+  result += processedContent;
+  result += '//}';
+  
+  return result;
 }
 
 // 変換ルール定義
@@ -249,6 +308,66 @@ const rules = [
       });
     },
     description: 'Process extended list options'
+  },
+  
+  // ===== ノートブロックの処理 =====
+  {
+    name: 'note block processing',
+    type: 'block',
+    from: /^\/\/note(?:\[([^\]]*)\])?(?:\[([^\]]*)\])?\{([\s\S]*?)^\/\/\}/gm,
+    to: processNoteBlock,
+    description: 'Process //note blocks with label and title support'
+  },
+  
+  // ===== ミニブロックの処理 =====
+  {
+    name: 'memo block',
+    type: 'block',
+    from: /^\/\/memo(?:\[([^\]]*)\])?\{([\s\S]*?)^\/\/\}/gm,
+    to: (match, title, content) => processMiniBlock('memo', match, title, content),
+    description: 'Process //memo blocks'
+  },
+  {
+    name: 'tip block',
+    type: 'block',
+    from: /^\/\/tip(?:\[([^\]]*)\])?\{([\s\S]*?)^\/\/\}/gm,
+    to: (match, title, content) => processMiniBlock('tip', match, title, content),
+    description: 'Process //tip blocks'
+  },
+  {
+    name: 'info block',
+    type: 'block',
+    from: /^\/\/info(?:\[([^\]]*)\])?\{([\s\S]*?)^\/\/\}/gm,
+    to: (match, title, content) => processMiniBlock('info', match, title, content),
+    description: 'Process //info blocks'
+  },
+  {
+    name: 'warning block',
+    type: 'block',
+    from: /^\/\/warning(?:\[([^\]]*)\])?\{([\s\S]*?)^\/\/\}/gm,
+    to: (match, title, content) => processMiniBlock('warning', match, title, content),
+    description: 'Process //warning blocks'
+  },
+  {
+    name: 'important block',
+    type: 'block',
+    from: /^\/\/important(?:\[([^\]]*)\])?\{([\s\S]*?)^\/\/\}/gm,
+    to: (match, title, content) => processMiniBlock('important', match, title, content),
+    description: 'Process //important blocks'
+  },
+  {
+    name: 'caution block',
+    type: 'block',
+    from: /^\/\/caution(?:\[([^\]]*)\])?\{([\s\S]*?)^\/\/\}/gm,
+    to: (match, title, content) => processMiniBlock('caution', match, title, content),
+    description: 'Process //caution blocks'
+  },
+  {
+    name: 'notice block',
+    type: 'block',
+    from: /^\/\/notice(?:\[([^\]]*)\])?\{([\s\S]*?)^\/\/\}/gm,
+    to: (match, title, content) => processMiniBlock('notice', match, title, content),
+    description: 'Process //notice blocks'
   }
 ];
 
@@ -309,8 +428,8 @@ async function processFile(filePath, outputDir, verbose) {
 
 // メインプログラム
 program
-  .version('0.2.0')
-  .description('Preprocess Re:VIEW files to convert differential tags with list extensions')
+  .version('0.3.0')
+  .description('Preprocess Re:VIEW files to convert differential tags with list extensions and note/miniblocks')
   .argument('<patterns...>', 'Glob patterns for Re:VIEW files (e.g., "articles/**/*.re")')
   .option('-o, --out-dir <dir>', 'Output directory', '.out')
   .option('-v, --verbose', 'Verbose output', false)
@@ -338,7 +457,7 @@ program
         process.exit(0);
       }
       
-      console.log(chalk.cyan('Re:VIEW Preprocessor v0.2.0 - Starting conversion...'));
+      console.log(chalk.cyan('Re:VIEW Preprocessor v0.3.0 - Starting conversion...'));
       
       // ファイルの検索
       const files = await globby(patterns, { dot: false });
@@ -360,60 +479,36 @@ program
           const replacements = await processFile(file, options.outDir, options.verbose);
           if (replacements > 0) {
             console.log(chalk.green(`✓ ${file} (${replacements} replacements)`));
-          } else if (options.verbose) {
-            console.log(chalk.gray(`✓ ${file} (no changes)`));
+          } else {
+            console.log(chalk.gray(`○ ${file} (no changes)`));
           }
         } else {
-          console.log(chalk.gray(`[DRY RUN] Would process: ${file}`));
+          console.log(chalk.yellow(`[DRY RUN] ${file}`));
         }
       }
       
-      // 統計情報の表示
-      if (options.stats || options.verbose) {
+      // 統計表示
+      if (options.stats) {
         console.log(chalk.cyan('\n=== Conversion Statistics ==='));
         console.log(chalk.white(`Files processed: ${stats.filesProcessed}`));
         console.log(chalk.white(`Total replacements: ${stats.totalReplacements}`));
-        
-        if (Object.keys(stats.ruleStats).length > 0) {
-          console.log(chalk.cyan('\nRule applications:'));
-          for (const [rule, count] of Object.entries(stats.ruleStats)) {
-            if (count > 0) {
-              console.log(chalk.gray(`  ${rule}: ${count}`));
-            }
+        console.log(chalk.white('\nRule statistics:'));
+        for (const [ruleName, count] of Object.entries(stats.ruleStats)) {
+          if (count > 0) {
+            console.log(chalk.gray(`  ${ruleName}: ${count}`));
           }
         }
       }
       
       if (!options.dryRun) {
-        console.log(chalk.green(`\n✓ Preprocessing complete! Output written to: ${options.outDir}`));
+        console.log(chalk.green(`\n✓ Conversion completed! Files written to: ${options.outDir}`));
       } else {
-        console.log(chalk.yellow('\n[DRY RUN] No files were modified.'));
+        console.log(chalk.yellow(`\n✓ Dry run completed! No files were written.`));
       }
-      
     } catch (error) {
-      console.error(chalk.red('Error:'), error.message);
-      if (options.verbose) {
-        console.error(error.stack);
-      }
+      console.error(chalk.red(`Error: ${error.message}`));
       process.exit(1);
     }
   });
-
-// ヘルプ表示のカスタマイズ
-program.on('--help', () => {
-  console.log('');
-  console.log('Examples:');
-  console.log('  $ review-preprocess "articles/**/*.re"');
-  console.log('  $ review-preprocess "chapters/*.re" -o build/preprocessed');
-  console.log('  $ review-preprocess "**/*.re" --dry-run --stats');
-  console.log('  $ review-preprocess --list-options  # Show available list options');
-  console.log('');
-  console.log('Conversion Rules:');
-  rules.forEach(rule => {
-    if (rule.description) {
-      console.log(`  - ${rule.description}`);
-    }
-  });
-});
 
 program.parse();
