@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFC107" width="24" height="24">
+  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="#FFC107" opacity="0.1"/>
+  <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.3l8 4v8.7c0 4.52-3.15 8.69-7 9.93-3.85-1.24-7-5.41-7-9.93V8.3l8-4z" fill="#FFC107"/>
+  <text x="12" y="16" text-anchor="middle" font-size="12" font-weight="bold" fill="#FFC107">⚠</text>
+</svg>

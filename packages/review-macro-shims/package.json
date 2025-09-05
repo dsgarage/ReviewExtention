@@ -1,0 +1,21 @@
+{
+  "name": "@dsgarage/review-macro-shims",
+  "version": "0.2.0",
+  "description": "Preprocessing CLI for Re:VIEW differential tags with list extensions",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "review-preprocess": "./bin/review-preprocess.js"
+  },
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "globby": "^14.0.2",
+    "chalk": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
