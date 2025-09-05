@@ -1,0 +1,10 @@
+node_modules/
+temp-latex/
+test/
+*.pdf
+*.html
+*.dvi
+*.aux
+*.log
+*.tex
+__REVIEW_BOOK__*
