@@ -70,6 +70,14 @@ $ review-preprocess "articles/**/*.re" --stats
 | `indent` | 数値 | なし | インデントガイド幅 |
 | `widecharfit` | on/off | off | 全角文字幅調整 |
 
+#### 折り返し制御
+
+| オプション | 値 | デフォルト | 説明 |
+|------------|-----|------------|------|
+| `fold` | on/off | on | 長い行の折り返し |
+| `wrap` | on/off/数値 | on | 折り返し設定（数値で文字数指定） |
+| `foldmark` | 文字列 | ↩ | 折り返し記号 |
+
 #### 外部ファイル
 
 | オプション | 値 | デフォルト | 説明 |
@@ -186,7 +194,32 @@ v0.2.0
 //}
 ```
 
-### 7. インタラクティブ機能（HTML/ePub）
+### 7. コードの折り返し制御
+
+80文字で折り返し：
+```review
+//list[][長いコマンド][wrap=80]{
+$ curl -X POST https://api.example.com/v1/users -H "Content-Type: application/json" -H "Authorization: Bearer TOKEN" -d '{"name":"John","email":"john@example.com"}'
+//}
+```
+
+折り返し無効：
+```review
+//list[][折り返しなし][fold=off]{
+const longLine = "This is a very long line that will not be wrapped and extends beyond the page margin in PDF output";
+//}
+```
+
+カスタム折り返し記号：
+```review
+//list[][カスタム記号][wrap=60,foldmark=→]{
+public void methodWithVeryLongSignature(String param1, String param2, String param3) {
+    System.out.println("Long method implementation");
+}
+//}
+```
+
+### 8. インタラクティブ機能（HTML/ePub）
 
 ```review
 //list[][対話的なサンプル][copybutton=on,foldable=on,anchorlinks=on]{

@@ -62,11 +62,64 @@ function convertListWithOptions(match, type, label, caption, options, content) {
     content = `#@# diffformat: ${opts.diffformat}\n${content}`;
   }
   
+  // 折り返し関連のオプション処理
+  if (opts.fold === 'off') {
+    // 折り返し無効（Re:VIEWのデフォルト動作）
+    // そのまま維持
+  } else if (opts.fold === 'on' || opts.wrap === 'on') {
+    // 折り返し有効（デフォルト）
+    if (!opts.foldmark) {
+      opts.foldmark = '↩'; // デフォルトの折り返し記号
+    }
+  }
+  
+  // 長い行の処理（wrap=<number> で指定された場合）
+  if (opts.wrap && opts.wrap !== 'on' && opts.wrap !== 'off') {
+    const wrapLength = parseInt(opts.wrap);
+    if (!isNaN(wrapLength) && wrapLength > 0) {
+      // 指定文字数で折り返し
+      content = wrapLongLines(content, wrapLength, opts.foldmark || '↩');
+    }
+  }
+  
   // オプション文字列の再構築
   const optStr = stringifyListOptions(opts);
   const optPart = optStr ? `[${optStr}]` : '';
   
   return `//list[${label || ''}][${caption || ''}]${optPart}{${content}//}`;
+}
+
+// 長い行を折り返す関数
+function wrapLongLines(content, maxLength, foldMark) {
+  const lines = content.split('\n');
+  const wrappedLines = [];
+  
+  for (const line of lines) {
+    if (line.length <= maxLength) {
+      wrappedLines.push(line);
+    } else {
+      // 長い行を折り返し
+      let remaining = line;
+      while (remaining.length > 0) {
+        if (remaining.length <= maxLength) {
+          wrappedLines.push(remaining);
+          break;
+        }
+        
+        // 単語境界で分割を試みる
+        let breakPoint = maxLength;
+        const lastSpace = remaining.lastIndexOf(' ', maxLength);
+        if (lastSpace > maxLength * 0.7) { // 70%以降にスペースがあれば使用
+          breakPoint = lastSpace;
+        }
+        
+        wrappedLines.push(remaining.substring(0, breakPoint) + foldMark);
+        remaining = '  ' + remaining.substring(breakPoint).trim(); // インデント追加
+      }
+    }
+  }
+  
+  return wrappedLines.join('\n');
 }
 
 // 変換ルール定義
@@ -178,6 +231,20 @@ const rules = [
       const listPattern = /^\/\/list\[([^\]]*)\]\[([^\]]*)\]\[([^\]]*)\]\{([\s\S]*?)^\/\/\}/gm;
       
       return content.replace(listPattern, (match, label, caption, options, body) => {
+        // オプションを正規化（lineno → lineno=on）
+        if (options) {
+          const normalizedOptions = options.split(',').map(opt => {
+            opt = opt.trim();
+            if (opt === 'lineno') return 'lineno=on';
+            if (opt === 'fold') return 'fold=on';
+            if (opt === 'widecharfit') return 'widecharfit=on';
+            if (opt === 'copybutton') return 'copybutton=on';
+            if (opt === 'foldable') return 'foldable=on';
+            if (opt === 'anchorlinks') return 'anchorlinks=on';
+            return opt;
+          }).join(',');
+          return convertListWithOptions(match, 'list', label, caption, normalizedOptions, body);
+        }
         return convertListWithOptions(match, 'list', label, caption, options, body);
       });
     },
