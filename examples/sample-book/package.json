@@ -1,0 +1,15 @@
+{
+  "name": "sample-book",
+  "private": true,
+  "scripts": {
+    "lint": "textlint '**/*.re' '**/*.md'",
+    "lint:fix": "textlint --fix '**/*.re' '**/*.md'"
+  },
+  "devDependencies": {
+    "textlint": "^15.2.2",
+    "textlint-plugin-review": "^0.4.1",
+    "textlint-rule-preset-japanese": "^10.0.4",
+    "textlint-rule-prh": "^6.1.0",
+    "textlint-rule-spellcheck-tech-word": "^5.0.0"
+  }
+}

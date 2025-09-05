@@ -1,0 +1,7 @@
+# Minimal Re:VIEW config (best effort)
+bookname: sample-book
+language: ja
+booktitle: "Re:VIEW Extensions Sample"
+aut: "Author"
+date: "2025-09-05"
+# 他の設定は必要に応じて追加

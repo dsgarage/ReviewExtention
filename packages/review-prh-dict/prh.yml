@@ -1,0 +1,8 @@
+rules:
+  # 例: 表記ゆれを統一
+  - expected: アルゴリズム
+    patterns:
+      - アルゴリスム
+      - アルゴリズムス
+  - expected: Node.js
+    patterns: [ nodejs, NodeJS, node.js ]

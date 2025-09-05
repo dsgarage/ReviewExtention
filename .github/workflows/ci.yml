@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+        review-version: ['5.6.0', '5.7.0', '5.8.0']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install lint deps (sample-book)
+        working-directory: examples/sample-book
+        run: npm ci
+
+      - name: Lint
+        working-directory: examples/sample-book
+        run: npm run lint
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install Re:VIEW ${{ matrix.review-version }}
+        run: gem install review -v ${{ matrix.review-version }}
+
+      - name: Build (pdfmaker)
+        working-directory: examples/sample-book
+        run: review-pdfmaker config.yml

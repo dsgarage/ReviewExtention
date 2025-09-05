@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "../../packages/review-lint-preset"
+  ],
+  "rules": {
+    "prh": {
+      "rulePaths": [
+        "../../packages/review-prh-dict/prh.yml"
+      ]
+    }
+  }
+}

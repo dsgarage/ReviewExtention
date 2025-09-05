@@ -1,0 +1,13 @@
+{
+  "name": "@dsgarage/review-lint-preset",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "peerDependencies": {
+    "textlint": ">=15",
+    "textlint-plugin-review": ">=0.4",
+    "textlint-rule-preset-japanese": ">=10",
+    "textlint-rule-prh": ">=6",
+    "textlint-rule-spellcheck-tech-word": ">=5"
+  }
+}
