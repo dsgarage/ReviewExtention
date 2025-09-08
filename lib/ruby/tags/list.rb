@@ -29,85 +29,105 @@ module ReVIEW
           key, value = opt.strip.split('=', 2)
           next unless key
 
-          key = key.to_sym
-          # Convert string values to appropriate types
-          value = case key
-                  when :wrap
-                    if value.nil? || value == 'on' || value == 'true'
-                      true
-                    elsif value == 'off' || value == 'false'
-                      false
-                    else
-                      value.to_i
-                    end
-                  when :fold, :lineno
-                    value.nil? || value == 'on' || value == 'true'
-                  when :indent
-                    value ? value.to_i : 20
-                  when :foldmark, :fontsize, :lang, :filename, :highlight
-                    value
-                  else
-                    value
-                  end
-          options[key] = value
+          case key
+          when 'wrap'
+            options[:wrap] = value == 'on' || value == 'true' || value.to_i > 0
+          when 'fold'
+            options[:fold] = value == 'on' || value == 'true'
+          when 'foldmark'
+            options[:foldmark] = value
+          when 'indent'
+            options[:indent] = value.to_i
+          when 'lineno'
+            options[:lineno] = value == 'on' || value == 'true' || value.to_i > 0
+          when 'fontsize'
+            options[:fontsize] = value
+          when 'lang', 'language'
+            options[:lang] = value
+          when 'filename'
+            options[:filename] = value
+          when 'highlight'
+            options[:highlight] = value
+          end
         end
         
         ListOptions.new(**options)
       end
 
-      # Wrap long lines if wrap option is specified
-      def wrap_lines(lines, options)
-        return lines unless options.wrap
-
-        wrap_at = options.wrap.is_a?(Integer) ? options.wrap : 80
-        foldmark = options.foldmark || '↩'
-        indent = options.indent || 20
-
-        wrapped = []
-        lines.each do |line|
-          if line.length <= wrap_at
-            wrapped << line
-          else
-            # Split long lines
-            pos = 0
-            while pos < line.length
-              if pos == 0
-                wrapped << line[pos, wrap_at]
-              else
-                # Add indentation for wrapped lines
-                wrapped << (' ' * indent) + line[pos, wrap_at - indent]
-              end
-              pos += (pos == 0 ? wrap_at : wrap_at - indent)
-            end
-          end
+      # Store options in thread-local variable for builder access
+      def list_header(id, caption, lang)
+        # Store options for builder
+        if lang && lang.include?('=')
+          options = parse_list_options(lang)
+          Thread.current[:list_options] = options
+          # Pass only actual language to original method
+          actual_lang = options.lang
+        else
+          Thread.current[:list_options] = nil
+          actual_lang = lang
         end
-        wrapped
+        
+        super(id, caption, actual_lang)
+      ensure
+        Thread.current[:list_options] = nil
+      end
+
+      def list_body(id, lines, lang)
+        super
+      end
+
+      def listnum_header(id, caption, lang)
+        # Force line numbering
+        if lang && lang.include?('=')
+          options = parse_list_options(lang)
+          options.lineno = true unless options.lineno
+          Thread.current[:list_options] = options
+          actual_lang = options.lang
+        else
+          Thread.current[:list_options] = ListOptions.new(lineno: true)
+          actual_lang = lang
+        end
+        
+        super(id, caption, actual_lang)
+      ensure
+        Thread.current[:list_options] = nil
+      end
+
+      def emlist(lines, caption = nil, lang = nil)
+        if lang && lang.include?('=')
+          options = parse_list_options(lang)
+          Thread.current[:list_options] = options
+          actual_lang = options.lang
+        else
+          Thread.current[:list_options] = nil
+          actual_lang = lang
+        end
+        
+        super(lines, caption, actual_lang)
+      ensure
+        Thread.current[:list_options] = nil
+      end
+
+      def cmd(lines, caption = nil, lang = nil)
+        # Use smaller font for command output by default
+        if lang && lang.include?('=')
+          options = parse_list_options(lang)
+          options.fontsize ||= 'small'
+          Thread.current[:list_options] = options
+          actual_lang = options.lang
+        else
+          Thread.current[:list_options] = ListOptions.new(fontsize: 'small')
+          actual_lang = lang
+        end
+        
+        super(lines, caption, actual_lang)
+      ensure
+        Thread.current[:list_options] = nil
       end
     end
   end
 
   class Compiler
     prepend CompilerExtension::ListExtension
-
-    # Override the list block handler to support extended options
-    alias_method :original_list_block, :read_block if method_defined?(:read_block)
-    
-    def list_block(name, args, lines)
-      # Parse extended options from third argument
-      options = parse_list_options(args[2]) if args.size >= 3
-      
-      # Apply line wrapping if specified
-      if options && options.wrap
-        lines = wrap_lines(lines, options)
-      end
-      
-      # Store options in a thread-local variable for builders to access
-      Thread.current[:list_options] = options
-      
-      # Call the original handler
-      original_list_block(name, args[0..1], lines) if respond_to?(:original_list_block)
-    ensure
-      Thread.current[:list_options] = nil
-    end
   end
 end
