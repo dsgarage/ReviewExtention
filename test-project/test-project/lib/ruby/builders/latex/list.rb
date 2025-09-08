@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'review/latexbuilder'
-require_relative '../../tags/list'
 
 module ReVIEW
   class LATEXBuilder
@@ -55,8 +54,12 @@ module ReVIEW
     def create_options_from_hash(hash)
       return nil if hash.empty?
       
-      # Use the ListOptions class from CompilerExtension
-      CompilerExtension::ListExtension::ListOptions.new(**hash)
+      # Create a simple options object
+      options = Struct.new(*hash.keys).new
+      hash.each do |key, value|
+        options[key] = value
+      end
+      options
     end
     
     # Merge existing options with parsed options

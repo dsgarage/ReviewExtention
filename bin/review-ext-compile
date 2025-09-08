@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Load Re:VIEW with custom extensions
+require 'review'
+
+# Load our extensions
+require_relative '../lib/ruby/tags/list'
+require_relative '../lib/ruby/tags/mapfile'
+require_relative '../lib/ruby/builders/latex/list'
+require_relative '../lib/ruby/builders/html/list'
+
+# Run the original review-compile command
+require 'review/cli'
+ReVIEW::CLI.start
