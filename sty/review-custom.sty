@@ -1,0 +1,52 @@
+% Review Extension Custom LaTeX Style
+% Provides wrap/fold functionality for code listings
+% Version: 0.1.1
+
+% Check if listings package is loaded
+\@ifpackageloaded{listings}{}{%
+  \usepackage{listings}%
+}
+
+% Define dummy languages to prevent errors when options are passed as language
+% Re:VIEW passes list options as language parameter, so we need to handle them
+\lstdefinelanguage{wrap=on,fold=on,foldmark=↩}{}
+\lstdefinelanguage{wrap=80,foldmark=→}{}
+\lstdefinelanguage{wrap=on,lineno=on,indent=20}{}
+\lstdefinelanguage{filename=app/models/user.rb,wrap=on,lang=ruby}{}
+\lstdefinelanguage{}{}
+
+% Global listings configuration for automatic line wrapping
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,                % Enable automatic line breaking
+  breakatwhitespace=false,        % Allow breaks at any character
+  breakindent=20pt,               % Indentation for wrapped lines
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, % Continuation mark
+  columns=fullflexible,           % Better character spacing
+  keepspaces=true,                % Preserve spaces
+  showstringspaces=false,         % Don't show spaces in strings
+  extendedchars=true,            % Support extended characters
+  inputencoding=utf8,            % UTF-8 support
+  literate={\_}{{\_}}1           % Fix underscore handling
+           {\{}{\textbraceleft}1
+           {\}}{\textbraceright}1
+}
+
+% Custom environment for wrapped code blocks (optional)
+\newenvironment{wrappedcode}[1][]{%
+  \lstset{#1}%
+  \begin{lstlisting}%
+}{%
+  \end{lstlisting}%
+}
+
+% Override for strict 80-column wrapping (optional)
+\newcommand{\setwrapwidth}[1]{%
+  \lstset{
+    linewidth=#1\baselineskip,
+    breaklines=true,
+    breakatwhitespace=false
+  }%
+}
+
+% for user-defined macro
