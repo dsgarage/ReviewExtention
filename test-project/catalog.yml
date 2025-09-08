@@ -2,6 +2,7 @@ PREDEF:
 
 CHAPS:
   - test-extensions.re
+  - articles/test-standard-parameters.re
 
 APPENDIX:
 
