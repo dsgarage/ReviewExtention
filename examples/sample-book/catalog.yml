@@ -1,2 +1,13 @@
+# カタログファイル
+# 章の構成を定義
+
+PREDEF:
+
 CHAPS:
-- articles/ch01.re
+  - articles/ch01.re
+  - articles/ch02.re
+  - articles/ch03-list-examples.re
+
+APPENDIX:
+
+POSTDEF:

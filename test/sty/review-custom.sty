@@ -1,0 +1,127 @@
+% for user-defined macro
+% カスタムスタイル定義（ミニブロックPNGアイコン対応）
+
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% アイコン付きミニブロックの再定義
+
+% infoブロック
+\renewenvironment{reviewinfo}[1][]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=blue!5!white,
+    colframe=blue!50!black,
+    title={\includegraphics[height=1em]{img/info.png}\hspace{0.5em}#1},
+    fonttitle=\bfseries,
+    breakable,
+    arc=2mm,
+    boxrule=1pt,
+    left=2mm,right=2mm,top=1mm,bottom=1mm
+  ]%
+}{%
+  \end{tcolorbox}%
+}
+
+% warningブロック  
+\renewenvironment{reviewwarning}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=orange!5!white,
+    colframe=orange!70!black,
+    title={\includegraphics[height=1em]{img/warning.png}\hspace{0.5em}#1},
+    fonttitle=\bfseries,
+    breakable,
+    arc=2mm,
+    boxrule=1pt,
+    left=2mm,right=2mm,top=1mm,bottom=1mm
+  ]%
+}{%
+  \end{tcolorbox}%
+}
+
+% importantブロック
+\renewenvironment{reviewimportant}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=red!5!white,
+    colframe=red!60!black,
+    title={\includegraphics[height=1em]{img/important.png}\hspace{0.5em}#1},
+    fonttitle=\bfseries,
+    breakable,
+    arc=2mm,
+    boxrule=1pt,
+    left=2mm,right=2mm,top=1mm,bottom=1mm
+  ]%
+}{%
+  \end{tcolorbox}%
+}
+
+% cautionブロック
+\renewenvironment{reviewcaution}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=yellow!10!white,
+    colframe=yellow!70!black,
+    title={\includegraphics[height=1em]{img/caution.png}\hspace{0.5em}#1},
+    fonttitle=\bfseries,
+    breakable,
+    arc=2mm,
+    boxrule=1pt,
+    left=2mm,right=2mm,top=1mm,bottom=1mm
+  ]%
+}{%
+  \end{tcolorbox}%
+}
+
+% noticeブロック
+\renewenvironment{reviewnotice}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=purple!5!white,
+    colframe=purple!50!black,
+    title={\includegraphics[height=1em]{img/notice.png}\hspace{0.5em}#1},
+    fonttitle=\bfseries,
+    breakable,
+    arc=2mm,
+    boxrule=1pt,
+    left=2mm,right=2mm,top=1mm,bottom=1mm
+  ]%
+}{%
+  \end{tcolorbox}%
+}
+
+% tipブロック
+\renewenvironment{reviewtip}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=green!5!white,
+    colframe=green!50!black,
+    title={\includegraphics[height=1em]{img/tip.png}\hspace{0.5em}#1},
+    fonttitle=\bfseries,
+    breakable,
+    arc=2mm,
+    boxrule=1pt,
+    left=2mm,right=2mm,top=1mm,bottom=1mm
+  ]%
+}{%
+  \end{tcolorbox}%
+}
+
+% memoブロック
+\renewenvironment{reviewmemo}[1]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=gray!5!white,
+    colframe=gray!50!black,
+    title={\includegraphics[height=1em]{img/memo.png}\hspace{0.5em}#1},
+    fonttitle=\bfseries,
+    breakable,
+    arc=2mm,
+    boxrule=1pt,
+    left=2mm,right=2mm,top=1mm,bottom=1mm
+  ]%
+}{%
+  \end{tcolorbox}%
+}

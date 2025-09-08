@@ -1,0 +1,43 @@
+% Review Custom Style for Line Wrapping
+% This file provides a solution for Issue #20 (wrap/fold options)
+% Compatible with Re:VIEW 5.8
+
+% Load the listings package if not already loaded
+\@ifpackageloaded{listings}{}{%
+  \usepackage{listings}%
+}
+
+% Load xcolor for colored output
+\@ifpackageloaded{xcolor}{}{%
+  \usepackage{xcolor}%
+}
+
+% ========================================
+% デフォルト設定：全てのコードブロックで自動折り返しを有効化
+% ========================================
+\lstset{
+  breaklines=true,                % 自動改行を有効化
+  breakatwhitespace=false,        % 任意の位置で改行可能
+  breakindent=20pt,               % 折り返し行のインデント
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, % 折り返し記号（赤色）
+  columns=fullflexible,           % 文字間隔の最適化
+  keepspaces=true,                % スペースを保持
+  showstringspaces=false,         % 文字列内のスペースを表示しない
+  basicstyle=\ttfamily\small,     % 等幅フォント、小さめのサイズ
+  tabsize=4,                       % タブ幅
+  frame=single,                    % 枠線
+  framesep=5pt,                    % 枠線との間隔
+  xleftmargin=0.5em,              % 左マージン
+  xrightmargin=0.5em,             % 右マージン
+  extendedchars=true,             % 拡張文字を許可
+  inputencoding=utf8              % UTF-8エンコーディング
+}
+
+% ========================================
+% デバッグメッセージ
+% ========================================
+\typeout{===== Review Custom Settings Loaded =====}
+\typeout{breaklines: true (enabled)}
+\typeout{breakatwhitespace: false (break anywhere)}
+\typeout{Note: Special character handling may be limited}
+\typeout{=========================================}
